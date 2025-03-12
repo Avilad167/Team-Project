@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Monitoring Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <h1>Welcome to Health Monitoring Dashboard</h1>
+
+    <!-- Form to Submit Sensor Data -->
+    <form id="sensorForm">
+        <label for="sensorValue">Sensor Value:</label>
+        <input type="text" id="sensorValue" name="sensorValue" required>
+        <button type="submit">Submit</button>
+    </form>
+
+    <!-- Display the list of sensor data -->
+    <h2>Recent Sensor Data:</h2>
+    <ul id="sensorDataList">
+        {% for entry in data %}
+            <li>{{ entry.timestamp }} - {{ entry.sensor_value }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Optional: Place to show response data -->
+    <p id="responseMessage"></p>
+
+    <script>
+    document.getElementById('sensorForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevent the form from submitting normally
+
+        const sensorValue = document.getElementById('sensorValue').value;
+
+        // Check if the sensor value is empty
+        if (!sensorValue) {
+            document.getElementById('responseMessage').textContent = 'Sensor value is required!';
+            return;
+        }
+
+        // Display a loading message while waiting for the server response
+        document.getElementById('responseMessage').textContent = 'Submitting data...';
+
+        // Use Fetch to submit data via AJAX
+        fetch('/submit-sensor-data/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'  // Django CSRF token for security
+            },
+            body: JSON.stringify({ sensorValue: sensorValue })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            document.getElementById('responseMessage').textContent = `Data submitted: ${data.message}`;
+
+            // Add the new data to the list
+            const list = document.getElementById('sensorDataList');
+            const newEntry = document.createElement('li');
+            newEntry.textContent = `${new Date().toLocaleString()} - ${data.sensorValue}`;
+            list.appendChild(newEntry);
+
+            // Reset the input field after submission
+            document.getElementById('sensorValue').value = '';
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            document.getElementById('responseMessage').textContent = `Error: ${error}`;
+        });
+    });
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Health Monitoring</title>
+</head>
+<body>
+    <h1>Health Monitoring Dashboard</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>Heart Rate (bpm)</th>
+                <th>Motion Detected</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in data %}
+            <tr>
+                <td>{{ entry.timestamp }}</td>
+                <td>{{ entry.temperature }}</td>
+                <td>{{ entry.humidity }}</td>
+                <td>{{ entry.heart_rate }}</td>
+                <td>{{ entry.motion_detected }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
