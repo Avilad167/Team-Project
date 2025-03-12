@@ -2,6 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),  # Admin site URL
-    path('', include('monitoring.urls')),  # Include the URLs from your monitoring app
+    path('admin/', admin.site.urls),
+    path('', include('monitoring.urls')),  # Add this line to map the root URL to the 'monitoring' app
 ]

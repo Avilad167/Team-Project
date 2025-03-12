@@ -4,76 +4,106 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Monitoring Dashboard</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-
-    <h1>Welcome to Health Monitoring Dashboard</h1>
-
-    <!-- Form to Submit Sensor Data -->
-    <form id="sensorForm">
-        <label for="sensorValue">Sensor Value:</label>
-        <input type="text" id="sensorValue" name="sensorValue" required>
-        <button type="submit">Submit</button>
-    </form>
-
-    <!-- Display the list of sensor data -->
-    <h2>Recent Sensor Data:</h2>
-    <ul id="sensorDataList">
-        {% for entry in data %}
-            <li>{{ entry.timestamp }} - {{ entry.sensor_value }}</li>
-        {% endfor %}
-    </ul>
-
-    <!-- Optional: Place to show response data -->
-    <p id="responseMessage"></p>
-
-    <script>
-    document.getElementById('sensorForm').addEventListener('submit', function(event) {
-        event.preventDefault();  // Prevent the form from submitting normally
-
-        const sensorValue = document.getElementById('sensorValue').value;
-
-        // Check if the sensor value is empty
-        if (!sensorValue) {
-            document.getElementById('responseMessage').textContent = 'Sensor value is required!';
-            return;
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
 
-        // Display a loading message while waiting for the server response
-        document.getElementById('responseMessage').textContent = 'Submitting data...';
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
 
-        // Use Fetch to submit data via AJAX
-        fetch('/submit-sensor-data/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'  // Django CSRF token for security
-            },
-            body: JSON.stringify({ sensorValue: sensorValue })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Success:', data);
-            document.getElementById('responseMessage').textContent = `Data submitted: ${data.message}`;
+        section {
+            padding: 20px;
+        }
 
-            // Add the new data to the list
-            const list = document.getElementById('sensorDataList');
-            const newEntry = document.createElement('li');
-            newEntry.textContent = `${new Date().toLocaleString()} - ${data.sensorValue}`;
-            list.appendChild(newEntry);
+        h2 {
+            color: #333;
+        }
 
-            // Reset the input field after submission
-            document.getElementById('sensorValue').value = '';
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            document.getElementById('responseMessage').textContent = `Error: ${error}`;
-        });
-    });
-</script>
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
 
+        li {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
 
+        .person-info {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .sensor-info {
+            font-size: 16px;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Health Monitoring Dashboard</h1>
+    </header>
+
+    <section>
+        <h2>People</h2>
+        <ul>
+            {% for person in people %}
+                <li>
+                    <div class="person-info">
+                        <strong>Name:</strong> {{ person.name }}<br>
+                        <strong>Age:</strong> {{ person.age }}<br>
+                        <strong>Gender:</strong> {{ person.gender }}
+                    </div>
+                </li>
+            {% empty %}
+                <li>No people found.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section>
+        <h2>Sensor Data</h2>
+        <ul>
+            {% for data in sensor_data %}
+                <li>
+                    <div class="sensor-info">
+                        <strong>Person:</strong> {{ data.person.name }}<br>
+                        <strong>Temperature:</strong> {{ data.temperature }}°C<br>
+                        <strong>Heart Rate:</strong> {{ data.heart_rate }} bpm<br>
+                        <strong>Motion Detected:</strong> {{ data.motion_detected }}<br>
+                        <strong>Timestamp:</strong> {{ data.timestamp }}
+                    </div>
+                </li>
+            {% empty %}
+                <li>No sensor data available.</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Health Monitoring System</p>
+    </footer>
 </body>
 </html>
