@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import SensorData  # Import SensorData model
+from .models import SensorData
 
 def dashboard(request):
     latest_data = SensorData.objects.last()  # Get the latest sensor data
@@ -11,3 +11,10 @@ def dashboard(request):
     }
     return render(request, 'monitoring/index.html', context)
 
+def report(request):
+    # This is a simple report page placeholder
+    return render(request, 'monitoring/report.html')
+
+def settings(request):
+    # This is a simple settings page placeholder
+    return render(request, 'monitoring/settings.html')
